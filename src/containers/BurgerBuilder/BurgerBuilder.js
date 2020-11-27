@@ -4,13 +4,18 @@ import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/OrderSummary/OrderSummary';
+import Spinner from '../../components/UI/Spinner/Spinner';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
+import AxiosInstance from '../../axios_order';
+import WithErrorHandler from '../../components/withErrorHandler/withErrorHandler';
 
 class BurgerBuilder extends Component{
     
     state = {
-        purchasing :  false
+        purchasing :  false,
+        loading : false,
+        error: null
     };
 
     purchasableState_handler = updatedQuantity => {
@@ -33,8 +38,31 @@ class BurgerBuilder extends Component{
         this.setState({ purchasing : newStutus });
     };
 
+    removeError_Handler = () => {
+        const newState = null;
+        this.setState({ error: newState });
+    };
+
     checkout_Handler = () => {
-        alert('Continue to Payment ?');
+        // console.log(this.props);
+        this.setState({ loading:  true });
+        const NewOrder = {
+            ingredients_list: this.props.ingredients,
+            total_price: this.props.total_price,
+            customer_data: "Divy Sen"
+        }
+        // alert('Continue to Payment ?');
+        AxiosInstance.post('/place-order',NewOrder)
+        .then( res => {
+            setTimeout(() => this.setState({ loading:  false, purchasing: false }), 2000);
+            console.log(res);
+        } )
+        .catch( err => {
+            setTimeout(() => {
+                this.setState({ loading:  false, purchasing: false, error: err.message });
+            }, 2000);
+            console.log(err);
+        } );
     };
 
     render(){
@@ -44,10 +72,18 @@ class BurgerBuilder extends Component{
         }
         return(
             <Auxiliary>
+                {/** instead of using WithErrorHandler as Higher Order Component, using it as normal component */}
+                {this.state.error ?
+                 <WithErrorHandler show closeModal={this.removeError_Handler} content={this.state.error}/> :
+                 null}
+                
                 <Modal show={this.state.purchasing} closeModal={this.cancelPurchasing_Handler}>
-                    <OrderSummary ingredients={this.props.ingredients} 
-                                cancel={this.cancelPurchasing_Handler} ordernow={this.checkout_Handler}
-                                burgerprice={this.props.total_price.toFixed(2)}/>
+                    { this.state.loading ?
+                        <Spinner /> :
+                        <OrderSummary ingredients={this.props.ingredients} 
+                        cancel={this.cancelPurchasing_Handler} ordernow={this.checkout_Handler}
+                        burgerprice={this.props.total_price.toFixed(2)}/>
+                    }
                 </Modal>
                 <Burger ingredients={this.props.ingredients}></Burger>
                 <BuildControls burgerprice={this.props.total_price.toFixed(2)} disabled={disabledInfo}

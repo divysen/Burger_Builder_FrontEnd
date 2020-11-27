@@ -8,7 +8,7 @@ const Modal = props => {
 
     useEffect( () => {
         console.log(`[Modal.js] useEffect updated with props.show`)
-    }, [props.show]);
+    }, [props.show, props.children]);
 
     return(
         <Auxiliary>
