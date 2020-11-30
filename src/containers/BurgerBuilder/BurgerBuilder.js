@@ -51,16 +51,31 @@ class BurgerBuilder extends Component{
             total_price: this.props.total_price,
             customer_data: "Divy Sen"
         }
+
+        const ingQueryParam = Object.entries(this.props.ingredients).join('&').replace(/[,]/g,'=');
+        // console.log(ingQueryParam);
         // alert('Continue to Payment ?');
         AxiosInstance.post('/place-order',NewOrder)
         .then( res => {
             setTimeout(() => this.setState({ loading:  false, purchasing: false }), 2000);
+
+            /** routing to checkout route using history prop */
+            this.props.history.push({
+                pathname: '/checkout',
+                search: '?' + ingQueryParam
+            });
             console.log(res);
         } )
         .catch( err => {
             setTimeout(() => {
                 this.setState({ loading:  false, purchasing: false, error: err.message });
             }, 2000);
+
+            /** routing to checkout route using history prop */
+            this.props.history.push({
+                pathname: '/checkout',
+                search: '?' + ingQueryParam
+            });
             console.log(err);
         } );
     };
