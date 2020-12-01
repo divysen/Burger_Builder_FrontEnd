@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
 import { Route, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import CheckOutSummary from '../../components/CheckOutSummary/CheckoutSummary';
 import ContactData from '../ContactData/ContactData';
 
 class Checkout extends Component {
-
-    state = {
-        ingredients : {
-            cheese : 0,
-            onion : 0,
-            salad : 0,
-            tomato : 0
-        }
-    }
 
     checkOutCancelled_handler = () => {
         this.props.history.goBack();
@@ -39,28 +31,40 @@ class Checkout extends Component {
         // a shorter method to do abobe task
 
 
-        let ing = {};
-        const query = new URLSearchParams(this.props.location.search);
-        for( let elem of query){
-            ing[elem[0]] = parseInt(elem[1],10);
-        }
-        this.setState({ ingredients: ing });
+        // let ing = {};
+        // const query = new URLSearchParams(this.props.location.search);
+        // for( let elem of query){
+        //     ing[elem[0]] = parseInt(elem[1],10);
+        // }
+        // this.setState({ ingredients: ing });
         // console.log(ing);
         console.log(this.props);
     }
 
+    // getDedivedStateFromProps(props, state){
+    //     if(this.props.total_price <= 10){
+    //         this.props.history.goBack();
+    //     }
+    // }
+
     render(){
-        
         return(
             <div>
                 <CheckOutSummary 
-                ingredients={this.state.ingredients}
+                ingredients={this.props.ingredients}
                 checkOutContinued={this.checkOutContinued_handler}
                 checkOutCancelled={this.checkOutCancelled_handler}/>
-                <Route path={'/checkout'+ this.props.location.search + '/contact_data'} component={ContactData}/>
+                <Route path={'/checkout/contact_data'} component={ContactData}/>
             </div>
         );
     }
 }
 
-export default withRouter(Checkout);
+const mapStateToProps = state => {
+    return{
+        ingredients : state.reducer1.ingredients,
+        total_price : state.reducer1.total_price
+    }
+};
+
+export default connect(mapStateToProps)(withRouter(Checkout));

@@ -19,7 +19,7 @@ const SideDrawer = props => {
                     <Logo/>
                 </div>
                 <nav>
-                    <NavigationItems />
+                    <NavigationItems back={props.closed}/>
                 </nav>
             </div>
         </Auxiliary>

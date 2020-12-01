@@ -7,7 +7,6 @@ import OrderSummary from '../../components/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import { connect } from 'react-redux';
 import * as actionTypes from '../../store/actions';
-import AxiosInstance from '../../axios_order';
 import WithErrorHandler from '../../components/withErrorHandler/withErrorHandler';
 
 class BurgerBuilder extends Component{
@@ -33,10 +32,10 @@ class BurgerBuilder extends Component{
         this.setState({ purchasing :  newStatus });
     };
 
-    cancelPurchasing_Handler = () => {
-        const newStutus = false;
-        this.setState({ purchasing : newStutus });
-    };
+    // cancelPurchasing_Handler = () => {
+    //     const newStutus = false;
+    //     this.setState({ purchasing : newStutus });
+    // };
 
     removeError_Handler = () => {
         const newState = null;
@@ -46,38 +45,13 @@ class BurgerBuilder extends Component{
     checkout_Handler = () => {
         // console.log(this.props);
         this.setState({ loading:  true });
-        const NewOrder = {
-            ingredients_list: this.props.ingredients,
-            total_price: this.props.total_price,
-            customer_data: "Divy Sen"
-        }
-
-        const ingQueryParam = Object.entries(this.props.ingredients).join('&').replace(/[,]/g,'=');
-        // console.log(ingQueryParam);
+        setTimeout(() => {
+            this.setState({ loading:  false, purchasing: false });
+            /** routing to checkout route using history prop */
+            this.props.history.push('/checkout');
+        }, 1000);
+    
         // alert('Continue to Payment ?');
-        AxiosInstance.post('/place-order',NewOrder)
-        .then( res => {
-            setTimeout(() => this.setState({ loading:  false, purchasing: false }), 2000);
-
-            /** routing to checkout route using history prop */
-            this.props.history.push({
-                pathname: '/checkout',
-                search: '?' + ingQueryParam
-            });
-            console.log(res);
-        } )
-        .catch( err => {
-            setTimeout(() => {
-                this.setState({ loading:  false, purchasing: false, error: err.message });
-            }, 2000);
-
-            /** routing to checkout route using history prop */
-            this.props.history.push({
-                pathname: '/checkout',
-                search: '?' + ingQueryParam
-            });
-            console.log(err);
-        } );
     };
 
     render(){
