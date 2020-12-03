@@ -6,16 +6,21 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import AxiosInstance from '../../axios_order';
 import Button from '../../components/UI/Button/Button';
 import StyleClass from './ContactData.css';
+import FormStyleClass from '../../components/UI/Input/Input.css';
+
+let Order = {};
 
 class ContactData extends Component{
     state = {
-        user : {
-            name: '',
-            email: '',
-            address: {
-                street: '',
-                pincode: ''
-            }
+        orderform : {
+            name: <input className={FormStyleClass.InputElement} type='text' onChange={(event)=>this.inputChanged_Handler(event)} name='user_name' placeholder='Your Name ?'/>,
+            email: <input className={FormStyleClass.InputElement} type='email' onChange={(event)=>this.inputChanged_Handler(event)} name='user_email' placeholder='Your Email ID ?'/>,
+            street: <input className={FormStyleClass.InputElement} type='text' onChange={(event)=>this.inputChanged_Handler(event)} name='user_address' placeholder='Your Address ?'/>,
+            pincode: <input className={FormStyleClass.InputElement} type='number' onChange={(event)=>this.inputChanged_Handler(event)} name='user_pincode' placeholder='Your Pin Code ?'/>,
+            delivery_speed: <select className={FormStyleClass.InputElement} onChange={(event)=>this.inputChanged_Handler(event)}>
+                                <option value='fastest'>Fastest</option>
+                                <option value='cheapest'>Cheapest</option>
+                            </select>
         },
         showmodel : false,
         loading : false,
@@ -23,6 +28,7 @@ class ContactData extends Component{
     }
 
     componentDidMount(){
+        console.log(Order);
         console.log(this.props);
     }
 
@@ -30,9 +36,16 @@ class ContactData extends Component{
     //     const newStutus = false;
     //     this.setState({ showmodel : newStutus });
     // };
+    inputChanged_Handler = (event) => { 
+        //console.log(event.target.value);
+        for (const key in this.state.orderform) {
+                Order[key] = event.target.value;
+        }
+    };
 
     orderPlaced_Handler(event){
-        event.preventDefault();
+        event.preveneDefault();
+        
         this.setState({ showmodel: true, loading: true });
         const NewOrder = {
             ingredients_list: this.props.ingredients,
@@ -43,7 +56,8 @@ class ContactData extends Component{
                 address: {
                     street: 'Indore',
                     pincode: 452016
-                }
+                },
+                delivery_speed: ''
             }
         };
 
@@ -53,7 +67,7 @@ class ContactData extends Component{
             this.setState({ loading: false, orderstatus: res.data[2] });
             setTimeout(() => {
                 this.setState({ showmodel: false });
-                this.props.history.push('/');
+                // this.props.history.push('/');
             }, 3000);
             console.log(res);
         } )
@@ -68,6 +82,17 @@ class ContactData extends Component{
     };
 
     render(){
+
+        let dynamicForm = [];
+        for (let entry in this.state.orderform) {
+            dynamicForm.push(
+                <div key={entry} className={FormStyleClass.Input}>
+                    <label className={FormStyleClass.Label}>{entry.toUpperCase().replace(/[_]/g,' ')}</label>
+                    {this.state.orderform[entry]}
+                </div>
+                );
+        }
+    
         return(
             <Fragment>
                 <Modal show={this.state.showmodel} closeModal={this.closeModel_Handler}>
@@ -78,11 +103,7 @@ class ContactData extends Component{
                 <div className={StyleClass.ContactData}>
                     <h4>Enter Your Contact Data</h4>
                     <form>
-                        <input type='text' name='user_name' placeholder='Your Name ?'/>
-                        <input type='email' name='user_email' placeholder='Your Email ID ?'/>
-                        <input type='text' name='user_address' placeholder='Your Address ?'/>
-                        <input type='number' name='user_pincode' placeholder='Your Pin Code ?'/>
-                        <br></br>
+                        {dynamicForm}
                         <Button btnType='Success' clicked={(event)=> this.orderPlaced_Handler(event)}>ORDER</Button>
                     </form>
                 </div>
