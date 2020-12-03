@@ -11,11 +11,12 @@ import FormStyleClass from '../../components/UI/Input/Input.css';
 class ContactData extends Component{
     state = {
         orderform : {
-            name: <input className={FormStyleClass.InputElement} type='text' onChange={(e1)=>this.inputChanged_Handler(e1)} name='user_name' placeholder='Your Name ?'/>,
-            email: <input className={FormStyleClass.InputElement} type='email' onChange={(e2)=>this.inputChanged_Handler(e2)} name='user_email' placeholder='Your Email ID ?'/>,
-            street: <input className={FormStyleClass.InputElement} type='text' onChange={(e3)=>this.inputChanged_Handler(e3)} name='user_address' placeholder='Your Address ?'/>,
-            pincode: <input className={FormStyleClass.InputElement} type='number' onChange={(e4)=>this.inputChanged_Handler(e4)} name='user_pincode' placeholder='Your Pin Code ?'/>,
-            delivery_speed: <select className={FormStyleClass.InputElement} onChange={(e5)=>this.inputChanged_Handler(e5)}>
+            name: <input className={FormStyleClass.InputElement} type='text' onChange={(e1, id = 'name')=>this.inputChanged_Handler(e1, id = 'name')} name='user_name' placeholder='Your Name ?'/>,
+            email: <input className={FormStyleClass.InputElement} type='email' onChange={(e2, id = 'email')=>this.inputChanged_Handler(e2, id = 'email')} name='user_email' placeholder='Your Email ID ?'/>,
+            street: <input className={FormStyleClass.InputElement} type='text' onChange={(e3, id = 'street')=>this.inputChanged_Handler(e3, id = 'street')} name='user_address' placeholder='Your Address ?'/>,
+            pincode: <input className={FormStyleClass.InputElement} type='number' onChange={(e4, id = 'pincode')=>this.inputChanged_Handler(e4, id = 'pincode')} name='user_pincode' placeholder='Your Pin Code ?'/>,
+            delivery_speed: <select className={FormStyleClass.InputElement} onChange={(e5, id = 'delivery_speed')=>this.inputChanged_Handler(e5, id = 'delivery_speed')}>
+                                <option value='-'>-----</option>
                                 <option value='fastest'>Fastest</option>
                                 <option value='cheapest'>Cheapest</option>
                             </select>
@@ -24,6 +25,8 @@ class ContactData extends Component{
         loading : false,
         orderstatus: null
     }
+
+    Order = {};
 
     componentDidMount(){
         // console.log(this.Order);
@@ -36,6 +39,7 @@ class ContactData extends Component{
     // };
 
     orderPlaced_Handler(event){
+        console.log(this.Order);
         // event.stopImmediatePropagation();
         event.preveneDefault();
         // event.stopPropagation();
@@ -75,11 +79,19 @@ class ContactData extends Component{
         } );
     };
 
-    inputChanged_Handler = (event) => { 
-        console.log(event.target.value);
-        for (const key in this.state.orderform) {
-                this.Order[key] = event.target.value;
+    inputChanged_Handler = (event, identifier) => { 
+        if ( this.state.orderform[identifier] ){
+            // console.log(identifier, event.target.value);
+            this.Order[identifier] = event.target.value;
         }
+        /**following method is dicontinued as it has the complexity of O(n) */
+
+        // for (const key in this.state.orderform) {
+        //         if( key === identifier ){
+
+        //             // this.Order[identifier] = event.target.value;
+        //         }
+        // }
     };
 
     render(){
