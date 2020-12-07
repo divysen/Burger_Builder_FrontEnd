@@ -80,7 +80,7 @@ class ContactData extends Component{
             const NewOrder = {
                 ingredients_list: this.props.ingredients,
                 total_price: this.props.total_price,
-                ...this.Customer_Data
+                customer: this.Customer_Data
             };
             this.setState({ showmodel: true, loading: true, order: NewOrder });
             console.log(NewOrder);
@@ -90,7 +90,7 @@ class ContactData extends Component{
                 this.setState({ loading: false, orderstatus: res.data[2] });
                 setTimeout(() => {
                     this.setState({ showmodel: false });
-                    // this.props.history.push('/');
+                    this.props.history.push('/');
                 }, 2000);
                 console.log(res);
             } )
