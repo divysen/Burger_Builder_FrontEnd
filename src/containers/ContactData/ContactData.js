@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Modal from '../../components/UI/Modal/Modal';
 import Spinner from '../../components/UI/Spinner/Spinner';
-import AxiosInstance from '../../axios_order';
 import Button from '../../components/UI/Button/Button';
 import StyleClass from './ContactData.css';
 import FormStyleClass from '../../components/UI/Input/Input.css';
+import * as Action from '../../store/actions/co_actions';
 
 class ContactData extends Component{
 
@@ -43,7 +43,8 @@ class ContactData extends Component{
             street: [FormStyleClass.Input],
             pincode: [FormStyleClass.Input],
             delivery_speed: [FormStyleClass.Input]
-        }, 
+        },
+        formoverallvalid: false, 
         order : null,
         showmodel : false,
         loading : false,
@@ -77,31 +78,15 @@ class ContactData extends Component{
             alert('Please fill '+ emptyFields+' Fields');
         }
         else{
+            // this.setState({ formoverallvalid: true });
             const NewOrder = {
                 ingredients_list: this.props.ingredients,
                 total_price: this.props.total_price,
-                customer: this.Customer_Data
+                customer_data: this.Customer_Data
             };
-            this.setState({ showmodel: true, loading: true, order: NewOrder });
-            console.log(NewOrder);
-            AxiosInstance.post('/place-order',NewOrder)
-            .then( res => {
-                // console.log(res);
-                this.setState({ loading: false, orderstatus: res.data[2] });
-                setTimeout(() => {
-                    this.setState({ showmodel: false });
-                    this.props.history.push('/');
-                }, 2000);
-                console.log(res);
-            } )
-            .catch( err => {
-                this.setState({ loading: false, orderstatus: err.message });
-                setTimeout(() => {
-                    this.setState({ showmodel: false });
-                    // this.props.history.push('/');
-                }, 2000);
-                console.log(err);
-            } );
+            // this.setState({ showmodel: true, loading: true, order: NewOrder });
+            this.props.callPlaceOrderApi(NewOrder);
+            // console.log('Order before api calling',NewOrder);
         }    
     };
 
@@ -172,16 +157,18 @@ class ContactData extends Component{
     
         return(
             <Fragment>
-                <Modal show={this.state.showmodel} closeModal={this.closeModel_Handler}>
-                    {this.state.loading ? 
+                <Modal show={!(this.props.orderstatus || this.props.error)} closeModal={this.closeModel_Handler}>
+                    {!(this.props.orderstatus || this.props.error) ? 
                         <Spinner/> :
-                        this.state.orderstatus}
+                        this.props.orderstatus ? this.props.orderstatus: this.props.error}
                 </Modal>
                 <div className={StyleClass.ContactData}>
                     <h4>Enter Your Contact Data</h4>
                     <form method='POST'>
                         {dynamicForm}
-                        <Button btnType='Success' clicked={(es)=> this.orderPlaced_Handler(es)}>ORDER</Button>
+                        <Button btnType='Success' 
+                        // disable={!this.state.formoverallvalid}
+                        clicked={(es)=> this.orderPlaced_Handler(es)}>ORDER</Button>
                     </form>
                 </div>
             </Fragment>
@@ -192,8 +179,16 @@ class ContactData extends Component{
 const mapStateToProps = state => {
     return{
         ingredients : state.reducer1.ingredients,
-        total_price : state.reducer1.total_price
+        total_price : state.reducer1.total_price,
+        orderstatus : state.reducer2.orderstatus,
+        error : state.reducer2.error
     }
 };
 
-export default connect(mapStateToProps)(withRouter(ContactData));
+const mapDispatchToProps = (dispatch) => {
+    return{
+        callPlaceOrderApi : newOrder => dispatch(Action.postNewOrder(newOrder)),
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(ContactData));

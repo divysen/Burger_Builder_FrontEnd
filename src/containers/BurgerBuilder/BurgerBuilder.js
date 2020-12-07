@@ -37,10 +37,10 @@ class BurgerBuilder extends Component{
         this.setState({ purchasing :  newStatus });
     };
 
-    // cancelPurchasing_Handler = () => {
-    //     const newStutus = false;
-    //     this.setState({ purchasing : newStutus });
-    // };
+    cancelPurchasing_Handler = () => {
+        const newStutus = false;
+        this.setState({ purchasing : newStutus });
+    };
 
     removeError_Handler = () => {
         const newState = null;

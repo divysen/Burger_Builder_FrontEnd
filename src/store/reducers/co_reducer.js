@@ -1,14 +1,31 @@
-// import * as actionTypes from '../actionTypes';
+import * as actionTypes from '../actionTypes';
 
 const initialstate = {
-    
+    orderstatus: null,
+    error: null
 };
 
 const reducer = ( state = initialstate, action ) => {
 
     const newState = {...state};
+    
+    switch( action.type ){
 
-    return newState;
+        case actionTypes.PLACE_ORDER:
+
+            newState.orderstatus = action.order;
+            return newState;
+        
+        case actionTypes.PLACE_ORDER_ERR:
+
+            newState.error = action.order;
+            return newState;
+
+        default:
+
+            return state;
+    }
+    
 };
 
 export default reducer;
