@@ -3,6 +3,7 @@ import { Route, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import CheckOutSummary from '../../components/CheckOutSummary/CheckoutSummary';
 import ContactData from '../ContactData/ContactData';
+import { Redirect } from 'react-router-dom';
 
 class Checkout extends Component {
 
@@ -46,17 +47,24 @@ class Checkout extends Component {
     //         this.props.history.goBack();
     //     }
     // }
-
+    
     render(){
-        return(
-            <div>
-                <CheckOutSummary 
-                ingredients={this.props.ingredients}
-                checkOutContinued={this.checkOutContinued_handler}
-                checkOutCancelled={this.checkOutCancelled_handler}/>
-                <Route path={'/checkout/contact_data'} component={ContactData}/>
-            </div>
-        );
+        if( this.props.ingredients ){
+            return(
+                <div>
+                    <CheckOutSummary 
+                    ingredients={this.props.ingredients}
+                    checkOutContinued={this.checkOutContinued_handler}
+                    checkOutCancelled={this.checkOutCancelled_handler}/>
+                    <Route path={'/checkout/contact_data'} component={ContactData}/>
+                </div>
+            );
+        }
+        else{
+            return(
+                <Redirect to='/' />
+            )
+        }
     }
 }
 

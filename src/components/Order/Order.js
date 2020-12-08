@@ -19,7 +19,7 @@ const Order = (props) => {
             <p><strong>Ingredients:</strong> {showinglist}</p>
             <p><strong>Total Price:</strong> {props.price} &#x20B9;</p>
             <p><strong>Ordered By:</strong> {props.customer.name}</p>
-            <p><strong>Delivery Address:</strong> {props.customer.address.street},{props.customer.address.pincode}</p>
+            {/* <p><strong>Delivery Address:</strong> {props.customer.address.street},{props.customer.address.pincode}</p> */}
             <br></br>
         </div>
     );

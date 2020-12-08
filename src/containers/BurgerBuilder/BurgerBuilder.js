@@ -61,8 +61,10 @@ class BurgerBuilder extends Component{
 
     componentDidMount(){
         if( !this.props.ingredients ){
-            setTimeout( () => this.props.loadIngredient_Handler()
+                setTimeout( () => this.props.loadIngredient_Handler()
             , 1000);
+        }else if( this.props.orderstatus ){
+            this.props.loadIngredient_Handler();
         }
     }
 
@@ -111,7 +113,8 @@ const mapStateToProps = state => {
     return{
         ingredients : state.reducer1.ingredients,
         total_price : state.reducer1.total_price,
-        error : state.reducer1.error
+        error : state.reducer1.error,
+        orderstatus : state.reducer2.orderstatus
     }
 };
 

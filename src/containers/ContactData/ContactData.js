@@ -7,6 +7,7 @@ import Button from '../../components/UI/Button/Button';
 import StyleClass from './ContactData.css';
 import FormStyleClass from '../../components/UI/Input/Input.css';
 import * as Action from '../../store/actions/co_actions';
+import { Redirect } from 'react-router-dom';
 
 class ContactData extends Component{
 
@@ -20,7 +21,7 @@ class ContactData extends Component{
 
             email: <input className={FormStyleClass.InputElement} type='email' 
             onChange={(e2, id = 'email')=>this.inputChanged_Handler(e2, id = 'email')} name='user_email' 
-            placeholder='Your Email ID ?' required maxLength='20' minLength='8'/>,
+            placeholder='Your Email ID ?' required maxLength='30' minLength='8'/>,
 
             street: <input className={FormStyleClass.InputElement} type='text'
             onChange={(e3, id = 'street')=>this.inputChanged_Handler(e3, id = 'street')} name='user_address'
@@ -44,21 +45,11 @@ class ContactData extends Component{
             pincode: [FormStyleClass.Input],
             delivery_speed: [FormStyleClass.Input]
         },
-        formoverallvalid: false, 
-        order : null,
-        showmodel : false,
-        loading : false,
-        orderstatus: null
-    }
-
-    componentDidMount(){
-        // console.log(this.Customer_Data);
-        // console.log(this.props);
-    }
+        formoverallvalid: false,
+    }    
 
     // closeModel_Handler = () => {
-    //     const newStutus = false;
-    //     this.setState({ showmodel : newStutus });
+    //     this.setState({ showmodel : false });
     // };
 
     orderPlaced_Handler(event){
@@ -84,7 +75,7 @@ class ContactData extends Component{
                 total_price: this.props.total_price,
                 customer_data: this.Customer_Data
             };
-            // this.setState({ showmodel: true, loading: true, order: NewOrder });
+            this.setState({ showmodel: true, loading: true, order: NewOrder });
             this.props.callPlaceOrderApi(NewOrder);
             // console.log('Order before api calling',NewOrder);
         }    
@@ -143,7 +134,11 @@ class ContactData extends Component{
         return requiredValidation && maxLengthValidation && minLengthValidation;
     }
 
-    render(){
+    componentWillUnmount(){
+
+    }
+
+    render(){ 
 
         let dynamicForm = [];
         for (let entry in this.state.orderform) {
@@ -153,26 +148,45 @@ class ContactData extends Component{
                     {this.state.orderform[entry]}
                 </div>
                 );
+            }
+
+        if( this.props.ingredients ) {
+
+            if( (this.props.orderstatus !== null) && ( this.props.showmodel === false ) ){
+                
+                    return(
+                        <Redirect to='/' />
+                    );
+                
+            }
+            else{
+                return(
+                    <Fragment>
+                        <Modal show={this.props.showmodel} 
+                        closeModal={this.closeModel_Handler}>
+                            {(this.props.orderstatus || this.props.error) ? 
+                                this.props.orderstatus ? this.props.orderstatus: this.props.error :
+                                <Spinner/> }
+                        </Modal>
+                        <div className={StyleClass.ContactData}>
+                            <h4>Enter Your Contact Data</h4>
+                            <form method='POST'>
+                                {dynamicForm}
+                                <Button btnType='Success' 
+                                // disable={!this.state.formoverallvalid}
+                                clicked={(es)=> this.orderPlaced_Handler(es)}>ORDER</Button>
+                            </form>
+                        </div>
+                    </Fragment>
+                );
+            }
+            
         }
-    
-        return(
-            <Fragment>
-                <Modal show={!(this.props.orderstatus || this.props.error)} closeModal={this.closeModel_Handler}>
-                    {!(this.props.orderstatus || this.props.error) ? 
-                        <Spinner/> :
-                        this.props.orderstatus ? this.props.orderstatus: this.props.error}
-                </Modal>
-                <div className={StyleClass.ContactData}>
-                    <h4>Enter Your Contact Data</h4>
-                    <form method='POST'>
-                        {dynamicForm}
-                        <Button btnType='Success' 
-                        // disable={!this.state.formoverallvalid}
-                        clicked={(es)=> this.orderPlaced_Handler(es)}>ORDER</Button>
-                    </form>
-                </div>
-            </Fragment>
-        );
+        else{
+            return(
+                <Redirect to='/' />
+            );
+        }
     }
 }
 
@@ -181,7 +195,8 @@ const mapStateToProps = state => {
         ingredients : state.reducer1.ingredients,
         total_price : state.reducer1.total_price,
         orderstatus : state.reducer2.orderstatus,
-        error : state.reducer2.error
+        error : state.reducer2.error,
+        showmodel : state.reducer2.showmodel
     }
 };
 

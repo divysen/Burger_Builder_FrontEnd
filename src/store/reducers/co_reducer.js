@@ -2,7 +2,8 @@ import * as actionTypes from '../actionTypes';
 
 const initialstate = {
     orderstatus: null,
-    error: null
+    error: null,
+    showmodel: false
 };
 
 const reducer = ( state = initialstate, action ) => {
@@ -21,6 +22,14 @@ const reducer = ( state = initialstate, action ) => {
             newState.error = action.order;
             return newState;
 
+        case actionTypes.SHOW_MODEL:
+            newState.showmodel = true;
+            return newState;
+
+        case actionTypes.HIDE_MODEL:
+            newState.showmodel = false;
+            return newState;
+                
         default:
 
             return state;
